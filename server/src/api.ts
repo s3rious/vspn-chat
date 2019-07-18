@@ -1,17 +1,13 @@
 import Application from "koa";
 import bodyParser from "koa-bodyparser";
 import Router from "koa-router";
-import { Telegram } from "telegraf";
 
 import { getAll, getLast } from "./redis";
 
 import { Message } from "./types/message";
 
-const { TG_CHAT_NAME } = process.env;
-
 const useApi = (
   app: Application,
-  telegram: Telegram,
   handleMessage: (message: Message) => void
 ) => {
   app.use(bodyParser());
@@ -44,7 +40,7 @@ const useApi = (
   });
 
   router.post("/messages", async ctx => {
-    const message: Message = ctx.request.body;
+    const message: Partial<Message> = ctx.request.body;
 
     if (!message.userName) {
       throw new Error("Missing userName");
@@ -54,20 +50,9 @@ const useApi = (
       throw new Error("Missing text");
     }
 
-    const telegramMessage = `*${message.userName}*\n${message.text}`;
+    const body = await handleMessage(message as Message);
 
-    const { date } = await telegram.sendMessage(
-      `@${TG_CHAT_NAME}`,
-      telegramMessage,
-      {
-        parse_mode: "Markdown"
-      }
-    );
-    message.date = date;
-
-    await handleMessage(message);
-
-    ctx.body = telegramMessage;
+    ctx.body = body;
   });
 
   app.use(router.routes());
