@@ -3,27 +3,11 @@ import Telegraf, { ContextMessageUpdate } from "telegraf";
 import cnsl from "./util/cnsl";
 import processFile from "./util/processFile";
 
+import { Message } from "./server";
+
 const { TG_BOT_TOKEN, TG_CHAT_NAME } = process.env;
 
-const bot = new Telegraf(TG_BOT_TOKEN);
-
-type Message = {
-  id: number;
-  userName: string;
-  date: number;
-
-  text?: string;
-  sticker?: string;
-  animation?: string;
-  photo?: string;
-}
-
-
 const getMessageData = async (ctx: ContextMessageUpdate): Promise<Message> => {
-  console.log(TG_CHAT_NAME)
-  console.log(ctx)
-
-
   const chatUsername = ctx.chat.username;
 
   cnsl.log(`Got a new message for chat: ${chatUsername}`);
@@ -35,21 +19,25 @@ const getMessageData = async (ctx: ContextMessageUpdate): Promise<Message> => {
     return;
   }
 
-  const { message_id: id, from: { first_name, last_name }, date, } = ctx.message;
+  const {
+    message_id: id,
+    from: { first_name, last_name },
+    date
+  } = ctx.message;
   const userName = `${first_name} ${last_name}`;
 
   const message: Message = {
     id,
     userName,
     date
-  }
+  };
 
   if (ctx.message.text) {
     const { text } = ctx.message;
     cnsl.log(`It’s a text.\nUsername: ${userName};\nText: ${ctx.message.text}`);
 
-    message.text = text
-    return message
+    message.text = text;
+    return message;
   }
 
   if (ctx.message.sticker) {
@@ -60,7 +48,7 @@ const getMessageData = async (ctx: ContextMessageUpdate): Promise<Message> => {
       const sticker = await processFile(file_id, "stickers");
 
       message.sticker = sticker;
-      return message
+      return message;
     } catch (error) {
       cnsl.log(error);
     }
@@ -74,7 +62,7 @@ const getMessageData = async (ctx: ContextMessageUpdate): Promise<Message> => {
       const animation = await processFile(file_id, "animations");
 
       message.animation = animation;
-      return message
+      return message;
     } catch (error) {
       cnsl.log(error);
     }
@@ -89,16 +77,22 @@ const getMessageData = async (ctx: ContextMessageUpdate): Promise<Message> => {
       const photo = await processFile(file_id, "photos");
 
       message.animation = photo;
-      return message
+      return message;
     } catch (error) {
       cnsl.log(error);
     }
   }
-}
+};
 
-bot.on("message", async ctx => {
-  const message = await getMessageData(ctx)
-  cnsl.log(message)
-});
+const createBot = (onMessage: (message: Message) => void) => {
+  const bot = new Telegraf(TG_BOT_TOKEN);
 
-export default bot;
+  bot.on("message", async ctx => {
+    const message = await getMessageData(ctx);
+    onMessage(message);
+  });
+
+  return bot;
+};
+
+export default createBot;
