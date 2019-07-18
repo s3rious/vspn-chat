@@ -8,15 +8,16 @@ import { Telegram } from "telegraf";
 import cnsl from "./cnsl";
 import download from "./download";
 
-const { TG_BOT_TOKEN } = process.env;
-
 const accessPromise = util.promisify(fs.access);
 const unlinkPromise = util.promisify(fs.unlink);
-const telegram = new Telegram(TG_BOT_TOKEN);
 
 type FileType = "stickers" | "photos" | "animations";
 
-const processFile = (fileId: string, type: FileType): Promise<string> =>
+const processFile = (
+  telegram: Telegram,
+  fileId: string,
+  type: FileType
+): Promise<string> =>
   new Promise(async (resolve, reject) => {
     const destPath = {
       animations: path.resolve(process.cwd(), "./media/animations"),

@@ -1,21 +1,13 @@
+import Koa from "koa";
+
+import useApi from "./api";
 import createBot from "./bot";
-import { store } from "./redis";
-import cnsl from "./util/cnsl";
+import handleMessage from "./handleMessage";
 
-export type Message = {
-  id?: number;
-  userName: string;
-  date: number;
-  text?: string;
-  sticker?: string;
-  animation?: string;
-  photo?: string;
-};
+const app = new Koa();
 
-const handleMessage = async (message: Message): Promise<void> => {
-  cnsl.log(message);
+const { bot, telegram } = createBot(handleMessage);
+const api = useApi(app, telegram, handleMessage);
 
-  store(message);
-};
-
-createBot(handleMessage).launch();
+bot.launch();
+api.listen(3000);

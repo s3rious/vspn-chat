@@ -1,13 +1,16 @@
-import Telegraf, { ContextMessageUpdate } from "telegraf";
+import Telegraf, { ContextMessageUpdate, Telegram } from "telegraf";
 
 import cnsl from "./util/cnsl";
 import processFile from "./util/processFile";
 
-import { Message } from "./server";
+import { Message } from "./types/message";
 
 const { TG_BOT_TOKEN, TG_CHAT_NAME } = process.env;
 
-const getMessageData = async (ctx: ContextMessageUpdate): Promise<Message> => {
+const getMessageData = async (
+  ctx: ContextMessageUpdate,
+  telegram: Telegram
+): Promise<Message> => {
   const chatUsername = ctx.chat.username;
 
   cnsl.log(`Got a new message for chat: ${chatUsername}`);
@@ -20,14 +23,12 @@ const getMessageData = async (ctx: ContextMessageUpdate): Promise<Message> => {
   }
 
   const {
-    message_id: id,
     from: { first_name, last_name },
     date
   } = ctx.message;
   const userName = `${first_name} ${last_name}`;
 
   const message: Message = {
-    id,
     userName,
     date
   };
@@ -45,7 +46,7 @@ const getMessageData = async (ctx: ContextMessageUpdate): Promise<Message> => {
     cnsl.log(`It’s a sticker.\nFileID: ${file_id}`);
 
     try {
-      const sticker = await processFile(file_id, "stickers");
+      const sticker = await processFile(telegram, file_id, "stickers");
 
       message.sticker = sticker;
       return message;
@@ -59,7 +60,7 @@ const getMessageData = async (ctx: ContextMessageUpdate): Promise<Message> => {
     cnsl.log(`It’s a animation.\nFileID: ${file_id}`);
 
     try {
-      const animation = await processFile(file_id, "animations");
+      const animation = await processFile(telegram, file_id, "animations");
 
       message.animation = animation;
       return message;
@@ -74,7 +75,7 @@ const getMessageData = async (ctx: ContextMessageUpdate): Promise<Message> => {
     cnsl.log(`It’s a photo.\nFileID: ${file_id}`);
 
     try {
-      const photo = await processFile(file_id, "photos");
+      const photo = await processFile(telegram, file_id, "photos");
 
       message.animation = photo;
       return message;
@@ -86,13 +87,17 @@ const getMessageData = async (ctx: ContextMessageUpdate): Promise<Message> => {
 
 const createBot = (onMessage: (message: Message) => void) => {
   const bot = new Telegraf(TG_BOT_TOKEN);
+  const telegram = new Telegram(TG_BOT_TOKEN);
 
   bot.on("message", async ctx => {
-    const message = await getMessageData(ctx);
+    const message = await getMessageData(ctx, telegram);
     onMessage(message);
   });
 
-  return bot;
+  return {
+    bot,
+    telegram
+  };
 };
 
 export default createBot;
