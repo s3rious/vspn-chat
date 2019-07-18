@@ -1,19 +1,21 @@
 import createBot from "./bot";
+import { store } from "./redis";
 import cnsl from "./util/cnsl";
 
 export type Message = {
-  id: number;
+  id?: number;
   userName: string;
   date: number;
-
   text?: string;
   sticker?: string;
   animation?: string;
   photo?: string;
-}
+};
 
-const handleMessage = (message: Message) => {
-  cnsl.log(message)
-}
+const handleMessage = async (message: Message): Promise<void> => {
+  cnsl.log(message);
 
-createBot(handleMessage).launch()
+  store(message);
+};
+
+createBot(handleMessage).launch();

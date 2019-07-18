@@ -16,7 +16,9 @@
   "author": "s3rious a.k.a Leonid Semenov <canismajor@kaschenka.ru>",
   "license": "MIT",
   "dependencies": {
+    "@types/redis": "^2.8.13",
     "@types/sharp": "^0.22.2",
+    "redis": "^2.8.0",
     "sharp": "^0.22.1",
     "telegraf": "^3.30.1"
   },
