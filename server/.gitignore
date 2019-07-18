@@ -1,0 +1,20 @@
+# Secret stuff
+/dev.sh
+
+# Modules
+node_modules
+
+# Builded app
+/dist
+
+# Logs and cache
+*.log*
+.cache
+/.tmp
+/media
+
+# IDEs and stuff
+.idea
+.DS_Store
+.vscode
+

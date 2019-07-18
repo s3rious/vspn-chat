@@ -1,0 +1,33 @@
+{
+  "version": "3",
+  "services": {
+    "server": {
+      "build": "./server",
+      "hostname": "chat-server",
+      "container_name": "chat-server",
+      "ports": [
+        "1337:1337"
+      ],
+      "environment": {
+        "TG_BOT_TOKEN": "<YOUR_TOKEN>",
+        "TG_CHAT_NAME": "<YOUR_CHAT_NAME_WITHOUT_@>",
+        "MEDIA_BASE_URL": "<YOUR_ABSOLUTE_LINK_TO_MEDIA>",
+        "ENVIRONMENT": "production"
+      },
+      "volumes": [
+        "./media:/media"
+      ],
+      "restart": "always"
+    },
+    "redis": {
+      "image": "redis:5.0-alpine",
+      "hostname": "redis",
+      "container_name": "redis",
+      "command": "redis-server --appendonly yes",
+      "volumes": [
+        "./data:/data"
+      ],
+      "restart": "always"
+    }
+  }
+}

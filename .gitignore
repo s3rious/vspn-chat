@@ -1,0 +1,5 @@
+# Secret stuff
+/docker-compose.yml
+
+# Misc
+.DS_Store
