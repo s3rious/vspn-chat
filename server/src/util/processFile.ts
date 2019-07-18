@@ -8,7 +8,7 @@ import { Telegram } from "telegraf";
 import cnsl from "./cnsl";
 import download from "./download";
 
-const { MEDIA_BASE_URL, TG_BOT_TOKEN } = process.env;
+const { TG_BOT_TOKEN } = process.env;
 
 const accessPromise = util.promisify(fs.access);
 const unlinkPromise = util.promisify(fs.unlink);
@@ -39,9 +39,9 @@ const processFile = (fileId: string, type: FileType): Promise<string> =>
       stickers: "webp"
     }[type];
     const webPath = {
-      animations: `${MEDIA_BASE_URL}animations/${fileId}.${destExtention}`,
-      photos: `${MEDIA_BASE_URL}photos/${fileId}.${destExtention}`,
-      stickers: `${MEDIA_BASE_URL}stickers/${fileId}.${destExtention}`
+      animations: `animations/${fileId}.${destExtention}`,
+      photos: `photos/${fileId}.${destExtention}`,
+      stickers: `stickers/${fileId}.${destExtention}`
     }[type];
 
     const dest = `${destPath}/${fileId}.${destExtention}`;
