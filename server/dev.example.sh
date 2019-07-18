@@ -7,6 +7,7 @@ echo "Exporting stuff"
 export TG_BOT_TOKEN="<YOUR_TOKEN>"
 export TG_CHAT_NAME="<YOUR_CHAT_NAME_WITHOUT_@>"
 export MEDIA_BASE_URL="http://localhost:8080/"
+export PORT=1337
 export ENVIRONMENT="development"
 
 echo "Creating media folders"
