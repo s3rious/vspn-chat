@@ -13,11 +13,7 @@ const unlinkPromise = util.promisify(fs.unlink);
 
 type FileType = "stickers" | "photos" | "animations";
 
-const processFile = (
-  telegram: Telegram,
-  fileId: string,
-  type: FileType
-): Promise<string> =>
+const processFile = (telegram: Telegram, fileId: string, type: FileType): Promise<string> =>
   new Promise(async (resolve, reject) => {
     const destPath = {
       animations: path.resolve(process.cwd(), "./media/animations"),
@@ -57,9 +53,7 @@ const processFile = (
         const link = await telegram.getFileLink(fileId);
         const tempDest = `${tmpPath}/${fileId}.${tmpExtention}`;
 
-        cnsl.log(
-          `File is not exists, downloading it.\nLink: ${link};\nTempDest: ${tempDest}`
-        );
+        cnsl.log(`File is not exists, downloading it.\nLink: ${link};\nTempDest: ${tempDest}`);
         await download(link, tempDest);
         cnsl.log("Downloaded");
 

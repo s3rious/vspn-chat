@@ -6,10 +6,7 @@ import { getAll, getLast } from "./redis";
 
 import { Message } from "./types/message";
 
-const useApi = (
-  app: Application,
-  handleMessage: (message: Message) => void
-) => {
+const useApi = (app: Application, handleMessage: (message: Message) => void) => {
   app.use(bodyParser());
 
   const router = new Router();

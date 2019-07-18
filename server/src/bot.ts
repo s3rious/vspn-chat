@@ -7,31 +7,19 @@ import { Message } from "./types/message";
 
 const { TG_BOT_TOKEN, TG_CHAT_NAME } = process.env;
 
-const getMessageData = async (
-  ctx: ContextMessageUpdate,
-  telegram: Telegram
-): Promise<Message> => {
+const getMessageData = async (ctx: ContextMessageUpdate, telegram: Telegram): Promise<Message> => {
   const chatUsername = ctx.chat.username;
 
   cnsl.log(`Got a new message for chat: ${chatUsername}`);
 
   if (!chatUsername || chatUsername !== TG_CHAT_NAME) {
-    cnsl.log(
-      `Ignoring it since it's not for matching one from the env: ${TG_CHAT_NAME}`
-    );
+    cnsl.log(`Ignoring it since it's not for matching one from the env: ${TG_CHAT_NAME}`);
     return;
   }
 
-  const {
-    from: { first_name, last_name },
-    date
-  } = ctx.message;
+  const { from: { first_name, last_name }, date } = ctx.message;
   const userName = `${first_name} ${last_name}`;
-
-  const message: Message = {
-    userName,
-    date
-  };
+  const message: Message = { userName, date };
 
   if (ctx.message.text) {
     const { text } = ctx.message;
@@ -70,8 +58,7 @@ const getMessageData = async (
   }
 
   if (ctx.message.photo) {
-    const { file_id } =
-      ctx.message.photo[ctx.message.photo.length - 1] || ctx.message.photo[0];
+    const { file_id } = ctx.message.photo[ctx.message.photo.length - 1] || ctx.message.photo[0];
     cnsl.log(`It’s a photo.\nFileID: ${file_id}`);
 
     try {

@@ -4,9 +4,7 @@ import { Message } from "./types/message";
 
 const { TG_CHAT_NAME } = process.env;
 
-const createSendToTelegram = (telegram: Telegram) => (
-  message: Message
-) => {
+const createSendToTelegram = (telegram: Telegram) => (message: Message) => {
   const telegramMessage = `*${message.userName}*\n${message.text}`;
 
   return telegram.sendMessage(
