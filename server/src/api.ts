@@ -1,12 +1,14 @@
 import Application from "koa";
 import bodyParser from "koa-bodyparser";
 import Router from "koa-router";
+import cors from "koa2-cors";
 
 import { getAll, getLast } from "./redis";
 
 import { Message } from "./types/message";
 
 const useApi = (app: Application, handleMessage: (message: Message) => void) => {
+  app.use(cors());
   app.use(bodyParser());
 
   const router = new Router();
