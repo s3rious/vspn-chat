@@ -34,9 +34,8 @@ const getUserAvatar = async (userId: number, telegram: TelegramWithGetUserProfil
   return null;
 };
 
-const getMessageData = async (ctx: ContextMessageUpdate, telegram: Telegram): Promise<Message> => {
+const getMessageData = async (ctx: ContextMessageUpdate, telegram: Telegram): Promise<Message | void> => {
   const chatUsername = ctx.chat.username;
-
   cnsl.log(`Got a new message for chat: ${chatUsername}`);
 
   if (!chatUsername || chatUsername !== TG_CHAT_NAME) {
@@ -44,11 +43,17 @@ const getMessageData = async (ctx: ContextMessageUpdate, telegram: Telegram): Pr
     return;
   }
 
+  if (!ctx.message.animation && !ctx.message.sticker && !ctx.message.photo && !ctx.message.text) {
+    cnsl.log(`Ignoring it since it's not containing media or text`);
+    return;
+  }
+
   const {
-    from: { id: userId, first_name, last_name },
+    from: { id: userId, first_name = "", last_name = "" },
     date
   } = ctx.message;
-  const userName = `${first_name} ${last_name}`;
+
+  const userName = `${first_name} ${last_name}`.trim();
   const avatar = await getUserAvatar(userId, telegram as TelegramWithGetUserProfilePhotos);
   const message: Message = { userName, avatar, date };
 
@@ -95,7 +100,7 @@ const getMessageData = async (ctx: ContextMessageUpdate, telegram: Telegram): Pr
     try {
       const photo = await processFile(telegram, file_id, "photos");
 
-      message.animation = photo;
+      message.photo = photo;
       return message;
     } catch (error) {
       cnsl.log(error);
@@ -109,7 +114,9 @@ const createBot = (onMessage: (message: Message) => void) => {
 
   bot.on("message", async ctx => {
     const message = await getMessageData(ctx, telegram);
-    onMessage(message);
+    if (message) {
+      onMessage(message);
+    }
   });
 
   return {
