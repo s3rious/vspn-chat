@@ -12,10 +12,12 @@ const Range = util.promisify(client.lrange).bind(client);
 const parse = (json: string): Message => {
   const message: Message = JSON.parse(json);
 
+  if (message.avatar) {
+    message.avatar = MEDIA_BASE_URL + message.avatar;
+  }
   if (message.sticker) {
     message.sticker = MEDIA_BASE_URL + message.sticker;
   }
-
   if (message.animation) {
     message.animation = MEDIA_BASE_URL + message.animation;
   }

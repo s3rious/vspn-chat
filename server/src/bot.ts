@@ -1,11 +1,38 @@
 import Telegraf, { ContextMessageUpdate, Telegram } from "telegraf";
+import { PhotoSize } from "telegram-typings";
 
 import cnsl from "./util/cnsl";
 import processFile from "./util/processFile";
 
 import { Message } from "./types/message";
 
+// TODO: for some reason it's missing from typing, send pull request to it
+type TelegramWithGetUserProfilePhotos = Telegram & {
+  getUserProfilePhotos: (
+    userId: number,
+    offset?: number,
+    limit?: number
+  ) => Promise<{
+    total_count: number;
+    photos: PhotoSize[][];
+  }>;
+};
+
 const { TG_BOT_TOKEN, TG_CHAT_NAME } = process.env;
+
+const getUserAvatar = async (userId: number, telegram: TelegramWithGetUserProfilePhotos): Promise<string | null> => {
+  const { photos } = await telegram.getUserProfilePhotos(userId);
+  const firstPhoto = (photos || [])[0] || [];
+  const firstPhotoSize: PhotoSize | any = firstPhoto[firstPhoto.length - 1] || {};
+  const fileId: string | null = firstPhotoSize.file_id || null;
+
+  if (fileId) {
+    const avatar = await processFile(telegram, fileId, "avatars");
+    return avatar;
+  }
+
+  return null;
+};
 
 const getMessageData = async (ctx: ContextMessageUpdate, telegram: Telegram): Promise<Message> => {
   const chatUsername = ctx.chat.username;
@@ -17,9 +44,13 @@ const getMessageData = async (ctx: ContextMessageUpdate, telegram: Telegram): Pr
     return;
   }
 
-  const { from: { first_name, last_name }, date } = ctx.message;
+  const {
+    from: { id: userId, first_name, last_name },
+    date
+  } = ctx.message;
   const userName = `${first_name} ${last_name}`;
-  const message: Message = { userName, date };
+  const avatar = await getUserAvatar(userId, telegram as TelegramWithGetUserProfilePhotos);
+  const message: Message = { userName, avatar, date };
 
   if (ctx.message.text) {
     const { text } = ctx.message;
