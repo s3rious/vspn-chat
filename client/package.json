@@ -1,0 +1,40 @@
+{
+  "name": "vspn-chat-client",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "module": "dist/index.es.js",
+  "files": [
+    "dist"
+  ],
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "rollup -c",
+    "watch": "rollup -cw",
+    "tslint": "tslint --project tsconfig.json --config tslint.json 'src/**/*.ts?(x)'",
+    "test": "npm run tslint && npm run jest",
+    "prettier": "prettier --write src/**/*.ts",
+    "tslint-check": "tslint-config-prettier-check ./tslint.json"
+  },
+  "keywords": [],
+  "author": "s3rious a.k.a. Leonid Semenov <canismajor@kaschenka.ru>",
+  "license": "MIT",
+  "dependencies": {
+    "preact": "^10.0.0-rc.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.15",
+    "@types/prettier": "^1.16.4",
+    "http-server": "^0.11.1",
+    "prettier": "^1.18.2",
+    "rollup": "^1.17.0",
+    "rollup-plugin-bundle-html": "^0.2.1",
+    "rollup-plugin-commonjs": "^10.0.1",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-replace": "^2.2.0",
+    "rollup-plugin-typescript2": "^0.22.0",
+    "tslint": "^5.18.0",
+    "tslint-config-prettier": "^1.18.0",
+    "typescript": "^3.5.3"
+  }
+}

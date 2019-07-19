@@ -1,0 +1,18 @@
+<html>
+  <head>
+  </head>
+  <body>
+    <div id="chat"></div>
+    <script>
+      if (!window.Chat) {
+        console.error("There is no \"window.Chat\" present.")
+      }
+      else {
+        console.log('Initing...')
+        var chat = new window.Chat(document.getElementById('chat'))
+        console.log('Inited')
+        console.log(chat)
+      }
+    </script>
+  </body>
+</html>

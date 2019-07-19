@@ -1,0 +1,16 @@
+# Modules
+node_modules
+/dist
+
+# Coverage
+/coverage
+
+# Logs and cache
+*.log*
+.rpt2_cache
+
+# IDEs and stuff
+.idea
+.DS_Store
+.vscode
+
